@@ -5,7 +5,8 @@ from thread import *
 
 HOST = ''
 PORT = 5188
-addr=[]
+arr=[]
+i=0
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print 'Socket created'
 
@@ -19,7 +20,7 @@ except socket.error as msg:
 print 'Socket bind complete'
 
 
-s.listen(10)
+s.listen(2)
 print 'Socket now listening'
 
 
@@ -35,10 +36,10 @@ def clientthread(conn):
         if not data:
             break
 
-        if conn == addr[0]:
-            addr[1].sendall(reply)
+        if conn == arr[0]:
+            arr[1].sendall(reply)
         else:
-            addr[0].sendall(reply)
+            arr[0].sendall(reply)
 
     # came out of loop
     conn.close()
@@ -47,10 +48,11 @@ def clientthread(conn):
 while 1:
     # wait to accept a connection - blocking call
     conn, addr = s.accept()
+    arr.append(conn)
     print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
     # start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
     start_new_thread(clientthread, (conn,))
-
+    i+=1
 s.close()
 
