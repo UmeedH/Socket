@@ -1,22 +1,22 @@
-
-import socket               # Import socket module
+from socket import *
+from threading import Thread
 import sys
-from thread import *
-s = socket.socket()         
-host = socket.gethostname()
-port = 5188               # Reserve a port for your service.
-msg = raw_input("Enter your message and press enter:")
-s.connect((host, port))
-print s.recv(1024)
-s.close                     # Close the socket when done
-def recieve():
+
+HOST = 'localhost'
+PORT = 9391
+ADDR = (HOST, PORT)
+Sock = socket(AF_INET, SOCK_STREAM)
+Sock.connect(ADDR)
+
+def recv():
     while True:
-        #Receiving from client
-        data = s.recv(1024)
+        data = Sock.recv(1024)
+        if not data: sys.exit(0)
         print data
-start_new_thread(recieve,())
-while 1:
-	reply = raw_input()
-	s.send(msg+' : '+reply)
-	if not reply:
-		break
+
+Thread(target=recv).start()
+while True:
+    data = raw_input('> ')
+    Sock.send(data)
+
+Sock.close()
